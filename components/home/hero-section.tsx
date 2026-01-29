@@ -36,10 +36,13 @@ export function HeroSection() {
           {/* ... badge and banner ... */}
           <div className="relative inline-flex items-center justify-center z-10">
             <div className="absolute inset-0 bg-gradient-to-r from-blue-500 to-purple-600 rounded-full blur-md opacity-40 animate-pulse" />
-            <div className="relative p-[1.5px] rounded-full overflow-hidden bg-zinc-200 dark:bg-zinc-800">
-              <div className="absolute inset-[-100%] animate-border-spin bg-[conic-gradient(from_var(--border-angle),#3b82f6,#8b5cf6,#ec4899,#3b82f6)]" />
+            {/* Animated Border Container */}
+            <div className="relative p-[2px] rounded-full overflow-hidden bg-zinc-200 dark:bg-zinc-800">
+              <div className="absolute left-1/2 top-1/2 w-[300%] aspect-square -translate-x-1/2 -translate-y-1/2 animate-border-spin bg-[conic-gradient(from_var(--border-angle),#3b82f6,#8b5cf6,#ec4899,#3b82f6)]" />
+              
+              {/* Content Container */}
               <div className="relative flex items-center gap-2 px-4 py-1.5 rounded-full bg-white dark:bg-zinc-950 text-blue-700 dark:text-blue-300 font-bold text-xs">
-                <Sparkles className="w-4 h-4 text-blue-600 dark:text-blue-400" />
+                <Sparkles className="w-4 h-4 text-blue-600 dark:text-blue-400 fill-blue-600/10" />
                 <span>مدرسة النور الدولية</span>
               </div>
             </div>
