@@ -1,11 +1,13 @@
 import { ShieldCheck, LogOut, LayoutGrid, Tags, MessageSquare } from "lucide-react";
-import { logout } from "@/lib/actions";
+import { logout } from "@/lib/actions/auth";
 import { Button } from "@/components/ui/button";
 import prisma from "@/lib/db";
 import { CategoryManager } from "@/components/admin/category-manager";
 import { ProjectManager } from "@/components/admin/project-manager";
 import { ReviewManager } from "@/components/admin/review-manager";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+
+export const dynamic = "force-dynamic";
 
 export default async function AdminPage() {
   const categories = await prisma.category.findMany({

@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { createCategory, updateCategory, deleteCategory } from "@/lib/actions";
+import { createCategory, updateCategory, deleteCategory } from "@/lib/actions/categories";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Trash2, Edit2, Plus, Loader2, AlertCircle, Tags } from "lucide-react";

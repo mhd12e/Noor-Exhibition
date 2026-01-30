@@ -1,20 +1,14 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { Menu, X, Home, Info, Calendar, Lightbulb, Star } from "lucide-react";
+import { Menu, X } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { ModeToggle } from "@/components/mode-toggle";
 import { cn } from "@/lib/utils";
 import { useRouter, usePathname } from "next/navigation";
-
-const navItems = [
-  { name: "الرئيسية", href: "/", icon: Home },
-  { name: "عن المعرض", href: "/#about", icon: Info },
-  { name: "الجدول الزمني", href: "/#schedule", icon: Calendar },
-  { name: "المشاريع", href: "/projects", icon: Lightbulb },
-  { name: "قيمنا", href: "/rate", icon: Star },
-];
+import { NAV_ITEMS } from "@/lib/constants";
+import Image from "next/image";
 
 export function MobileNav() {
   const [isOpen, setIsOpen] = useState(false);
@@ -30,7 +24,7 @@ export function MobileNav() {
 
     const observerOptions = {
       root: null,
-      rootMargin: "-40% 0px -40% 0px", // More balanced margin for detection
+      rootMargin: "-40% 0px -40% 0px",
       threshold: 0,
     };
 
@@ -50,7 +44,6 @@ export function MobileNav() {
       if (el) observer.observe(el);
     });
 
-    // Reset when at the very top
     const handleScroll = () => {
       if (window.scrollY < 50) {
         setActiveSection("");
@@ -116,15 +109,25 @@ export function MobileNav() {
            <Button variant="ghost" size="icon" onClick={() => setIsOpen(true)}>
             <Menu className="h-6 w-6" />
           </Button>
-          <span 
-            className="font-bold text-lg cursor-pointer transition-opacity hover:opacity-70"
+          <div 
+            className="flex items-center gap-3 cursor-pointer transition-opacity hover:opacity-70"
             onClick={() => {
                 if (pathname === "/") window.scrollTo({ top: 0, behavior: "smooth" });
                 else router.push("/");
             }}
           >
-            معرض الابتكار
-          </span>
+            <div className="relative w-8 h-8 rounded-lg overflow-hidden border border-zinc-200 dark:border-zinc-800">
+              <Image
+                src="/logo.png"
+                alt="Logo"
+                fill
+                className="object-contain"
+              />
+            </div>
+            <span className="font-bold text-lg">
+              معرض الابتكار
+            </span>
+          </div>
         </div>
         <ModeToggle />
       </div>
@@ -155,7 +158,7 @@ export function MobileNav() {
               </div>
 
               <nav className="flex flex-col gap-2">
-                {navItems.map((item) => {
+                {NAV_ITEMS.map((item) => {
                   const active = isItemActive(item.href);
                   return (
                     <a

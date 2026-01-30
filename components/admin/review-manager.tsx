@@ -3,7 +3,7 @@
 import { Star, Calendar, Trash2, Loader2, MessageSquare } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
-import { deleteReview } from "@/lib/actions";
+import { deleteReview } from "@/lib/actions/reviews";
 import { useState } from "react";
 import {
   Dialog,

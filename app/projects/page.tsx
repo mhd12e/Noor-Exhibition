@@ -2,10 +2,7 @@ import { ProjectsView } from "@/components/projects/projects-view";
 import { Metadata } from "next";
 import prisma from "@/lib/db";
 
-export const metadata: Metadata = {
-  title: "المشاريع | معرض الابتكار 2026",
-  description: "تصفح المشاريع المبتكرة لطلاب مدرسة النور الدولية",
-};
+export const dynamic = "force-dynamic";
 
 export default async function ProjectsPage() {
   const [projects, categories] = await Promise.all([

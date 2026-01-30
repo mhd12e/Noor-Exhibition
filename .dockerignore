@@ -1,0 +1,10 @@
+node_modules
+.next
+.git
+.env
+*.db
+*.db-journal
+README.md
+scripts
+Dockerfile
+docker-compose.yml

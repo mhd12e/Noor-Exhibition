@@ -5,7 +5,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Star, Send, CheckCircle2, Loader2, Home } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
-import { submitReview } from "@/lib/actions";
+import { submitReview } from "@/lib/actions/reviews";
 import { cn } from "@/lib/utils";
 
 interface Review {

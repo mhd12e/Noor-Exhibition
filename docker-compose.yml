@@ -1,0 +1,15 @@
+services:
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: noor-exhibition-app
+    restart: always
+    ports:
+      - "4232:3000"
+    env_file:
+      - .env
+    environment:
+      # Use the internal container path
+      - DATABASE_URL=file:/app/prisma/dev.db
+      - NODE_ENV=production
