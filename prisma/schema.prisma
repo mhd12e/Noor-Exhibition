@@ -1,0 +1,45 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id       String @id @default(uuid())
+  email    String @unique
+  password String
+}
+
+model Category {
+  id       String    @id @default(uuid())
+  name     String    @unique
+  projects Project[]
+}
+
+model Project {
+  id          String   @id @default(uuid())
+  title       String
+  description String
+  year        Int      @default(2026)
+  creators    String   @default("") // Semicolon separated names
+  link        String?  // Optional external link
+  video       Boolean  @default(false)
+  cover       Boolean  @default(false)
+  categoryId  String
+  category    Category @relation(fields: [categoryId], references: [id])
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Review {
+  id        String   @id @default(uuid())
+  stars     Int
+  reason    String
+  createdAt DateTime @default(now())
+}

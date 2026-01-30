@@ -16,6 +16,8 @@ export const metadata: Metadata = {
   description: "النسخة السنوية لعام 2026 من معرض الابتكار في مدرسة النور الدولية",
 };
 
+import { MainWrapper } from "@/components/layout/main-wrapper";
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -41,12 +43,10 @@ export default function RootLayout({
 
           <MobileNav />
           
-          <div className="relative z-10 min-h-screen flex flex-col pt-16">
-            <main className="flex-1">
-              {children}
-            </main>
+          <MainWrapper>
+            {children}
             <SiteFooter />
-          </div>
+          </MainWrapper>
         </ThemeProvider>
       </body>
     </html>

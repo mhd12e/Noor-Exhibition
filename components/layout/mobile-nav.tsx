@@ -1,7 +1,7 @@
 "use client";
 
-import React, { useState } from "react";
-import { Menu, X, Home, Info, Calendar, Lightbulb } from "lucide-react";
+import React, { useState, useEffect } from "react";
+import { Menu, X, Home, Info, Calendar, Lightbulb, Star } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { ModeToggle } from "@/components/mode-toggle";
@@ -10,21 +10,64 @@ import { useRouter, usePathname } from "next/navigation";
 
 const navItems = [
   { name: "الرئيسية", href: "/", icon: Home },
-  { name: "عن المعرض", href: "/#about", icon: Info }, // Updated to absolute path for hash
+  { name: "عن المعرض", href: "/#about", icon: Info },
   { name: "الجدول الزمني", href: "/#schedule", icon: Calendar },
   { name: "المشاريع", href: "/projects", icon: Lightbulb },
+  { name: "قيمنا", href: "/rate", icon: Star },
 ];
 
 export function MobileNav() {
   const [isOpen, setIsOpen] = useState(false);
+  const [activeSection, setActiveSection] = useState("");
   const router = useRouter();
   const pathname = usePathname();
+
+  useEffect(() => {
+    if (pathname !== "/") {
+      setActiveSection("");
+      return;
+    }
+
+    const observerOptions = {
+      root: null,
+      rootMargin: "-40% 0px -40% 0px", // More balanced margin for detection
+      threshold: 0,
+    };
+
+    const observerCallback = (entries: IntersectionObserverEntry[]) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          setActiveSection(`#${entry.target.id}`);
+        }
+      });
+    };
+
+    const observer = new IntersectionObserver(observerCallback, observerOptions);
+
+    const sections = ["hero", "about", "schedule"];
+    sections.forEach((id) => {
+      const el = document.getElementById(id);
+      if (el) observer.observe(el);
+    });
+
+    // Reset when at the very top
+    const handleScroll = () => {
+      if (window.scrollY < 50) {
+        setActiveSection("");
+      }
+    };
+    window.addEventListener("scroll", handleScroll);
+
+    return () => {
+      observer.disconnect();
+      window.removeEventListener("scroll", handleScroll);
+    };
+  }, [pathname]);
 
   const handleNavigation = (e: React.MouseEvent<HTMLAnchorElement, MouseEvent>, href: string) => {
     e.preventDefault();
     setIsOpen(false);
     
-    // Handle Home/Top Scroll
     if (href === "/" || href === "/#top") {
       if (pathname === "/") {
         window.scrollTo({ top: 0, behavior: "smooth" });
@@ -34,25 +77,37 @@ export function MobileNav() {
       return;
     }
 
-    // Handle Hash Links (on same page or different page)
     if (href.includes("#")) {
       const [path, hash] = href.split("#");
+      const isHome = pathname === "/" || pathname === path;
       
-      // If we are already on the path, just scroll
-      if (pathname === path || (path === "/" && pathname === "/")) {
-        const element = document.querySelector(`#${hash}`);
+      if (isHome) {
+        const element = document.getElementById(hash);
         if (element) {
           element.scrollIntoView({ behavior: "smooth", block: "start" });
         }
       } else {
-        // If on different page, push the full path (nextjs handles hash scroll usually, or we might need a useEffect)
         router.push(href);
       }
     } else {
-        // Standard Navigation
-        router.push(href);
+      router.push(href);
     }
   };
+
+  const isItemActive = (href: string) => {
+    if (pathname === "/projects" && href === "/projects") return true;
+    if (pathname === "/") {
+      if (href === "/") {
+        return activeSection === "" || activeSection === "#hero";
+      }
+      return href.endsWith(activeSection) && activeSection !== "";
+    }
+    return false;
+  };
+
+  if (pathname.startsWith("/projects/") && pathname.split("/").length > 2) {
+    return null;
+  }
 
   return (
     <>
@@ -77,7 +132,6 @@ export function MobileNav() {
       <AnimatePresence>
         {isOpen && (
           <>
-            {/* Backdrop */}
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
@@ -86,7 +140,6 @@ export function MobileNav() {
               className="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm"
             />
             
-            {/* Sidebar Drawer */}
             <motion.div
               initial={{ x: "100%" }}
               animate={{ x: 0 }}
@@ -102,21 +155,24 @@ export function MobileNav() {
               </div>
 
               <nav className="flex flex-col gap-2">
-                {navItems.map((item) => (
-                  <a
-                    key={item.href}
-                    href={item.href}
-                    onClick={(e) => handleNavigation(e, item.href)}
-                    className={cn(
-                      "flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium transition-colors cursor-pointer",
-                      "hover:bg-zinc-100 dark:hover:bg-zinc-900 text-zinc-700 dark:text-zinc-300",
-                      pathname === item.href ? "bg-zinc-100 dark:bg-zinc-900 text-blue-600 dark:text-blue-400" : ""
-                    )}
-                  >
-                    <item.icon className="h-5 w-5" />
-                    {item.name}
-                  </a>
-                ))}
+                {navItems.map((item) => {
+                  const active = isItemActive(item.href);
+                  return (
+                    <a
+                      key={item.href}
+                      href={item.href}
+                      onClick={(e) => handleNavigation(e, item.href)}
+                      className={cn(
+                        "flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium transition-colors cursor-pointer",
+                        "hover:bg-zinc-100 dark:hover:bg-zinc-900 text-zinc-700 dark:text-zinc-300",
+                        active ? "bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400" : ""
+                      )}
+                    >
+                      <item.icon className="h-5 w-5" />
+                      {item.name}
+                    </a>
+                  );
+                })}
               </nav>
               
               <div className="absolute bottom-6 left-6 right-6">

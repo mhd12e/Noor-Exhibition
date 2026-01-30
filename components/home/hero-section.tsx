@@ -1,9 +1,10 @@
 "use client";
 
 import Image from "next/image";
+import Link from "next/link";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, Sparkles, Calendar, MapPin, ChevronDown } from "lucide-react";
+import { ArrowLeft, Sparkles, Calendar, MapPin, ChevronDown, Star } from "lucide-react";
 
 export function HeroSection() {
   const container = {
@@ -22,7 +23,7 @@ export function HeroSection() {
   };
 
   return (
-    <section className="relative flex min-h-[calc(100vh-4rem)] flex-col items-center justify-center py-16 px-6 text-center bg-transparent">
+    <section id="hero" className="relative flex min-h-[calc(100vh-4rem)] flex-col items-center justify-center py-16 px-6 text-center bg-transparent">
       
       <motion.div
         variants={container}
@@ -33,7 +34,7 @@ export function HeroSection() {
         {/* Header Section */}
         <header className="space-y-4 relative flex flex-col items-center">
           
-          {/* ... badge and banner ... */}
+          {/* Badge */}
           <div className="relative inline-flex items-center justify-center z-10">
             <div className="absolute inset-0 bg-gradient-to-r from-blue-500 to-purple-600 rounded-full blur-md opacity-40 animate-pulse" />
             {/* Animated Border Container */}
@@ -94,22 +95,29 @@ export function HeroSection() {
         </section>
 
         {/* Action Buttons */}
-        <div className="flex flex-row gap-4 justify-center pt-2">
-          <Button className="flex-1 max-w-[160px] h-11 gap-2 text-sm font-bold shadow-lg shadow-blue-500/20">
-            المشاريع
-            <ArrowLeft className="w-4 h-4" />
-          </Button>
-          <Button variant="outline" className="flex-1 max-w-[160px] h-11 text-sm font-bold">
-            الجدول
-          </Button>
+        <div className="flex flex-col gap-4 pt-2">
+          <div className="flex flex-row gap-4 justify-center">
+            <Link href="/projects" className="flex-1 max-w-[160px]">
+              <Button className="w-full h-11 gap-2 text-sm font-bold shadow-lg shadow-blue-500/20">
+                المشاريع
+                <ArrowLeft className="w-4 h-4" />
+              </Button>
+            </Link>
+            <Link href="/#schedule" className="flex-1 max-w-[160px]">
+              <Button variant="outline" className="w-full h-11 text-sm font-bold">
+                الجدول
+              </Button>
+            </Link>
+          </div>
+          
+          <Link href="/rate" className="w-full max-w-[336px] mx-auto">
+            <Button variant="secondary" className="w-full h-12 gap-2 text-sm font-bold bg-blue-50 text-blue-600 hover:bg-blue-100 border border-blue-100 dark:bg-blue-900/20 dark:text-blue-400 dark:border-blue-800 dark:hover:bg-blue-900/30 shadow-sm transition-all">
+              <Star className="w-4 h-4 fill-current" />
+              قيم تجربة المعرض
+            </Button>
+          </Link>
         </div>
       </motion.div>
-
-      {/* Scroll Indicator - Re-positioned for better visibility */}
-      <div className="absolute bottom-6 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 z-20 animate-bounce">
-        <span className="text-[10px] uppercase tracking-[0.25em] text-zinc-500 dark:text-zinc-400 font-bold">اسحب للأسفل</span>
-        <ChevronDown className="w-8 h-8 text-blue-500 dark:text-blue-400 opacity-80" />
-      </div>
     </section>
   );
 }
