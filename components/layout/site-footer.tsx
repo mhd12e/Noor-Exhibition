@@ -25,6 +25,15 @@ export function SiteFooter() {
             className="text-blue-500 hover:underline font-medium"
           >
             mhd12
+          </a>{" "}
+          من فريق{" "}
+          <a 
+            href="https://team.mhd12.dev" 
+            target="_blank" 
+            rel="noopener noreferrer"
+            className="text-blue-500 hover:underline font-medium"
+          >
+            Al Noor Innovators Team
           </a>
         </p>
       </div>
