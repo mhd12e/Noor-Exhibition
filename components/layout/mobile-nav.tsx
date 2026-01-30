@@ -116,7 +116,7 @@ export function MobileNav() {
                 else router.push("/");
             }}
           >
-            <div className="relative w-8 h-8 rounded-lg overflow-hidden border border-zinc-200 dark:border-zinc-800">
+            <div className="relative w-8 h-8 overflow-hidden">
               <Image
                 src="/logo.png"
                 alt="Logo"
