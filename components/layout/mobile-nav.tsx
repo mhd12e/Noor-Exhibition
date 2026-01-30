@@ -89,6 +89,7 @@ export function MobileNav() {
 
   const isItemActive = (href: string) => {
     if (pathname === "/projects" && href === "/projects") return true;
+    if (pathname === "/rate" && href === "/rate") return true;
     if (pathname === "/") {
       if (href === "/") {
         return activeSection === "" || activeSection === "#hero";
