@@ -2,7 +2,7 @@ import { Home, Info, Calendar, Lightbulb, Star } from "lucide-react";
 
 export const APP_CONFIG = {
   MAX_COVER_SIZE: 3 * 1024 * 1024, // 3MB
-  MAX_VIDEO_SIZE: 50 * 1024 * 1024, // 50MB
+  MAX_VIDEO_SIZE: 100 * 1024 * 1024, // 100MB
   START_YEAR: 2024,
   CURRENT_YEAR: new Date().getFullYear(),
 };

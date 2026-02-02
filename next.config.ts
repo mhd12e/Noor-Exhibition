@@ -4,15 +4,15 @@ const nextConfig: NextConfig = {
   output: 'standalone',
   experimental: {
     serverActions: {
-      bodySizeLimit: '50mb',
+      bodySizeLimit: '100mb',
     },
-    proxyClientMaxBodySize: '50mb',
+    proxyClientMaxBodySize: '100mb',
   },
   images: {
     remotePatterns: [
       {
         protocol: 'https',
-        hostname: 'noor-exhibition-r2.mhd12.dev',
+        hostname: 'noor-r2.mhd12.dev',
         port: '',
         pathname: '/**',
       },

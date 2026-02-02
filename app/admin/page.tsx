@@ -8,6 +8,7 @@ import { ReviewManager } from "@/components/admin/review-manager";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 export const dynamic = "force-dynamic";
+export const maxDuration = 300; // 5 minutes
 
 export default async function AdminPage() {
   const categories = await prisma.category.findMany({
@@ -73,7 +74,11 @@ export default async function AdminPage() {
         </div>
 
         <TabsContent value="projects" className="focus-visible:outline-none ring-offset-white dark:ring-offset-zinc-950">
-          <ProjectManager projects={projects} categories={categories} />
+          <ProjectManager 
+            projects={projects} 
+            categories={categories} 
+            publicUrl={process.env.NEXT_PUBLIC_R2_PUBLIC_URL || ""} 
+          />
         </TabsContent>
 
         <TabsContent value="categories" className="focus-visible:outline-none ring-offset-white dark:ring-offset-zinc-950">

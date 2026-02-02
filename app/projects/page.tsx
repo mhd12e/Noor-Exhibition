@@ -42,6 +42,7 @@ export default async function ProjectsPage() {
       projects={serializedProjects} 
       categories={serializedCategories}
       years={years}
+      publicUrl={process.env.NEXT_PUBLIC_R2_PUBLIC_URL || ""}
     />
   );
 }

@@ -58,18 +58,61 @@ export function ProjectForm({ project, categories, onSubmit, onCancel, publicUrl
 
   const handleFormSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    
+    if (creators.length === 0) {
+      setError("Please add at least one student.");
+      return;
+    }
+
+    if (!project && !selectedCover) {
+      setError("Cover image is required.");
+      return;
+    }
+
+    if (selectedCover && selectedCover.size > APP_CONFIG.MAX_COVER_SIZE) {
+      setError("Cover image exceeds 3MB.");
+      return;
+    }
+
+    if (selectedVideo && selectedVideo.size > APP_CONFIG.MAX_VIDEO_SIZE) {
+      setError(`Video exceeds ${APP_CONFIG.MAX_VIDEO_SIZE / (1024 * 1024)}MB.`);
+      return;
+    }
+
     setIsPending(true);
     setError(null);
-    const formData = new FormData(e.currentTarget);
-    formData.set("creators", creators.join(";"));
-    if (project) {
-      if (removeCover) formData.set("removeCover", "true");
-      if (removeVideo) formData.set("removeVideo", "true");
+    try {
+      const formData = new FormData(e.currentTarget);
+      formData.set("creators", creators.join(";"));
+      
+      console.log("Submitting project form...");
+      console.log("Title:", formData.get("title"));
+      
+      // Explicitly set the files to ensure they are captured regardless of DOM state
+      if (selectedCover) {
+        console.log("Attaching cover:", selectedCover.name, `(${selectedCover.size} bytes)`);
+        formData.set("cover", selectedCover);
+      }
+      if (selectedVideo) {
+        console.log("Attaching video:", selectedVideo.name, `(${selectedVideo.size} bytes)`);
+        formData.set("video", selectedVideo);
+      }
+
+      if (project) {
+        if (removeCover) formData.set("removeCover", "true");
+        if (removeVideo) formData.set("removeVideo", "true");
+      }
+      
+      const result = await onSubmit(formData);
+      if (result && result.error) {
+        setError(result.error);
+      }
+    } catch (err: any) {
+      console.error("Submission error:", err);
+      setError("Failed to upload. Please check your connection and file size.");
+    } finally {
+      setIsPending(false);
     }
-    
-    const result = await onSubmit(formData);
-    if (result.error) setError(result.error);
-    setIsPending(false);
   };
 
   return (
@@ -145,14 +188,19 @@ export function ProjectForm({ project, categories, onSubmit, onCancel, publicUrl
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
           <div className="space-y-3">
             <label className="text-xs font-black uppercase tracking-widest text-zinc-500 flex items-center gap-2"><ImageIcon className="w-4 h-4" /> Cover Image (Max 3MB)</label>
-            {project?.cover && !removeCover ? (
+            
+            {/* Existing Cover Display */}
+            {project?.cover && !removeCover && (
               <div className="space-y-2">
                 <div className="relative w-full aspect-video rounded-xl overflow-hidden border border-zinc-200 dark:border-zinc-800">
                   <img src={`${publicUrl}/imgs/${project.id}.png`} alt="Current" className="object-cover w-full h-full" />
                 </div>
                 <button type="button" onClick={() => setRemoveCover(true)} className="text-[10px] font-bold text-red-500 underline uppercase">Delete Image</button>
               </div>
-            ) : (
+            )}
+
+            {/* New Cover Upload/Preview */}
+            {(!project?.cover || removeCover) && (
               <div className="space-y-2">
                 {selectedCover ? (
                   <div className="space-y-2">
@@ -162,25 +210,46 @@ export function ProjectForm({ project, categories, onSubmit, onCancel, publicUrl
                     <button type="button" onClick={() => {setSelectedCover(null); setInputKeys(k => ({...k, cover: k.cover+1}))}} className="text-[10px] font-bold text-red-500 underline uppercase">Clear Selection</button>
                   </div>
                 ) : (
-                  <>
-                    <Input key={inputKeys.cover} name="cover" type="file" accept="image/*" className="cursor-pointer rounded-xl" required={!project?.cover || removeCover} onChange={(e) => setSelectedCover(e.target.files?.[0] || null)} />
-                    {removeCover && <div className="flex items-center justify-between px-1"><p className="text-[10px] font-bold text-red-500 uppercase">Existing cover will be deleted</p><button type="button" onClick={() => setRemoveCover(false)} className="text-[10px] font-bold text-zinc-500 underline uppercase">Undo</button></div>}
-                  </>
+                  <div className="relative">
+                    <Input 
+                      key={inputKeys.cover} 
+                      name="cover" 
+                      type="file" 
+                      accept="image/*" 
+                      className="cursor-pointer rounded-xl" 
+                      required={!project?.cover || removeCover} 
+                      onChange={(e) => setSelectedCover(e.target.files?.[0] || null)} 
+                    />
+                    {removeCover && (
+                      <div className="flex items-center justify-between px-1 mt-2">
+                        <p className="text-[10px] font-bold text-red-500 uppercase">Existing cover will be deleted</p>
+                        <button type="button" onClick={() => setRemoveCover(false)} className="text-[10px] font-bold text-zinc-500 underline uppercase">Undo</button>
+                      </div>
+                    )}
+                  </div>
                 )}
               </div>
             )}
+            
+            {/* Hidden actual file inputs to ensure FormData always has them if they were selected but the UI changed */}
+            {selectedCover && <input type="file" name="cover-hidden" className="hidden" />}
           </div>
 
           <div className="space-y-3">
-            <label className="text-xs font-black uppercase tracking-widest text-zinc-500 flex items-center gap-2"><Video className="w-4 h-4" /> Video (Max 50MB, MP4) <span className="text-[10px] bg-zinc-100 dark:bg-zinc-800 px-1.5 py-0.5 rounded text-zinc-400">OPTIONAL</span></label>
-            {project?.video && !removeVideo ? (
+            <label className="text-xs font-black uppercase tracking-widest text-zinc-500 flex items-center gap-2"><Video className="w-4 h-4" /> Video (Max 100MB, MP4) <span className="text-[10px] bg-zinc-100 dark:bg-zinc-800 px-1.5 py-0.5 rounded text-zinc-400">OPTIONAL</span></label>
+            
+            {/* Existing Video Display */}
+            {project?.video && !removeVideo && (
               <div className="space-y-2">
                 <div className="w-full h-10 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-900/50 flex items-center px-4">
                   <Video className="w-4 h-4 text-blue-500 mr-2" /><span className="text-xs font-bold uppercase text-blue-500">Video Uploaded</span>
                 </div>
                 <button type="button" onClick={() => setRemoveVideo(true)} className="text-[10px] font-bold text-red-500 underline uppercase">Delete Video</button>
               </div>
-            ) : (
+            )}
+
+            {/* New Video Upload/Preview */}
+            {(!project?.video || removeVideo) && (
               <div className="space-y-2">
                 {selectedVideo ? (
                   <div className="space-y-2">
@@ -190,10 +259,22 @@ export function ProjectForm({ project, categories, onSubmit, onCancel, publicUrl
                     <button type="button" onClick={() => {setSelectedVideo(null); setInputKeys(k => ({...k, video: k.video+1}))}} className="text-[10px] font-bold text-red-500 underline uppercase">Clear Selection</button>
                   </div>
                 ) : (
-                  <>
-                    <Input key={inputKeys.video} name="video" type="file" accept="video/mp4" className="cursor-pointer rounded-xl" onChange={(e) => setSelectedVideo(e.target.files?.[0] || null)} />
-                    {removeVideo && <div className="flex items-center justify-between px-1"><p className="text-[10px] font-bold text-red-500 uppercase">Existing video will be deleted</p><button type="button" onClick={() => setRemoveVideo(false)} className="text-[10px] font-bold text-zinc-500 underline uppercase">Undo</button></div>}
-                  </>
+                  <div className="relative">
+                    <Input 
+                      key={inputKeys.video} 
+                      name="video" 
+                      type="file" 
+                      accept="video/*" 
+                      className="cursor-pointer rounded-xl" 
+                      onChange={(e) => setSelectedVideo(e.target.files?.[0] || null)} 
+                    />
+                    {removeVideo && (
+                      <div className="flex items-center justify-between px-1 mt-2">
+                        <p className="text-[10px] font-bold text-red-500 uppercase">Existing video will be deleted</p>
+                        <button type="button" onClick={() => setRemoveVideo(false)} className="text-[10px] font-bold text-zinc-500 underline uppercase">Undo</button>
+                      </div>
+                    )}
+                  </div>
                 )}
               </div>
             )}

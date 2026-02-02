@@ -22,7 +22,20 @@
 
 # misc
 .DS_Store
+.AppleDouble
+.LSOverride
+Icon
+Thumbs.db
 *.pem
+
+# IDEs
+.vscode/
+.idea/
+*.swp
+*.swo
+.project
+.classpath
+.settings/
 
 # debug
 npm-debug.log*
@@ -45,10 +58,22 @@ next-env.d.ts
 *.db-journal
 *.db-shm
 *.db-wal
+*.sqlite
+*.sqlite-journal
+/prisma/dev.db
+/prisma/dev.db-journal
 
 # logs
 logs
 *.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
+
+# temp folder
+/temp/
+/tmp/
 
 # docker
 .docker

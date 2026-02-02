@@ -12,15 +12,16 @@ import { ProjectListItem } from "./projects/project-list-item";
 interface ProjectManagerProps {
   projects: Project[];
   categories: Category[];
+  publicUrl: string;
 }
 
-export function ProjectManager({ projects, categories }: ProjectManagerProps) {
+export function ProjectManager({ projects, categories, publicUrl }: ProjectManagerProps) {
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [deletingId, setDeletingId] = useState<string | null>(null);
   const [editingProject, setEditingProject] = useState<Project | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
   
-  const publicUrl = process.env.NEXT_PUBLIC_R2_PUBLIC_URL || "";
+  // No longer using process.env here directly to avoid build-time inlining issues
 
   const handleEdit = (project: Project) => {
     setEditingProject(project);
@@ -36,18 +37,23 @@ export function ProjectManager({ projects, categories }: ProjectManagerProps) {
   };
 
   const handleFormSubmit = async (formData: FormData) => {
-    let result;
-    if (editingProject) {
-      result = await updateProject(editingProject.id, formData);
-    } else {
-      result = await createProject(formData);
-    }
+    try {
+      let result;
+      if (editingProject) {
+        result = await updateProject(editingProject.id, formData);
+      } else {
+        result = await createProject(formData);
+      }
 
-    if (!result.error) {
-      setIsFormOpen(false);
-      setEditingProject(null);
+      if (result && !result.error) {
+        setIsFormOpen(false);
+        setEditingProject(null);
+      }
+      return result;
+    } catch (e: any) {
+      console.error("Project submission error:", e);
+      return { error: e.message || "An unexpected server error occurred" };
     }
-    return result;
   };
 
   return (

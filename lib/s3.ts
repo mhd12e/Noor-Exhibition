@@ -14,6 +14,7 @@ export async function uploadFile(
   key: string,
   contentType: string
 ) {
+  console.log(`Starting upload to R2: ${key} (${(buffer.length / 1024 / 1024).toFixed(2)}MB)`);
   const command = new PutObjectCommand({
     Bucket: process.env.R2_BUCKET_NAME!,
     Key: key,
@@ -21,8 +22,14 @@ export async function uploadFile(
     ContentType: contentType,
   });
 
-  await s3Client.send(command);
-  return `${process.env.NEXT_PUBLIC_R2_PUBLIC_URL}/${key}`;
+  try {
+    await s3Client.send(command);
+    console.log(`Successfully uploaded to R2: ${key}`);
+    return `${process.env.NEXT_PUBLIC_R2_PUBLIC_URL}/${key}`;
+  } catch (error) {
+    console.error(`R2 Upload Error (${key}):`, error);
+    throw error;
+  }
 }
 
 export async function deleteFile(key: string) {

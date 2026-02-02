@@ -25,9 +25,10 @@ interface ProjectsViewProps {
   projects: Project[];
   categories: Category[];
   years: number[];
+  publicUrl: string;
 }
 
-export function ProjectsView({ projects, categories, years }: ProjectsViewProps) {
+export function ProjectsView({ projects, categories, years, publicUrl }: ProjectsViewProps) {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState<string>("all");
   const [selectedYear, setSelectedYear] = useState<string>("all");
@@ -154,7 +155,7 @@ export function ProjectsView({ projects, categories, years }: ProjectsViewProps)
             className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"
           >
             {filteredProjects.map((project) => (
-              <ProjectCard key={project.id} {...project} />
+              <ProjectCard key={project.id} {...project} publicUrl={publicUrl} />
             ))}
           </motion.div>
         ) : (

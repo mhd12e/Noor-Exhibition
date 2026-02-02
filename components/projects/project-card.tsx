@@ -13,10 +13,10 @@ interface ProjectCardProps {
   category: string;
   cover: boolean;
   video: boolean;
+  publicUrl: string;
 }
 
-export function ProjectCard({ id, title, description, category, cover }: ProjectCardProps) {
-  const publicUrl = process.env.NEXT_PUBLIC_R2_PUBLIC_URL;
+export function ProjectCard({ id, title, description, category, cover, publicUrl }: ProjectCardProps) {
   const imageUrl = cover ? `${publicUrl}/imgs/${id}.png` : "/reception-room.png";
 
   return (

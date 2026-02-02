@@ -22,20 +22,18 @@ WORKDIR /app
 ENV NODE_ENV=production
 ENV NEXT_TELEMETRY_DISABLED=1
 
-RUN addgroup --system --gid 1001 nodejs
-RUN adduser --system --uid 1001 nextjs
-
-# Set permissions for the app and prisma directory
-RUN mkdir -p /app/prisma && chown -R nextjs:nodejs /app/prisma
+# The 'node' user already has UID/GID 1000 in node-alpine
+# Just ensure the prisma directory exists and is owned by 'node'
+RUN mkdir -p /app/prisma && chown -R node:node /app/prisma
 
 # Copy necessary files from builder
 COPY --from=builder /app/public ./public
-COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
-COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
+COPY --from=builder --chown=node:node /app/.next/standalone ./
+COPY --from=builder --chown=node:node /app/.next/static ./.next/static
 # Ensure the local dev.db is copied into the image
-COPY --from=builder --chown=nextjs:nodejs /app/prisma ./prisma
+COPY --from=builder --chown=node:node /app/prisma ./prisma
 
-USER nextjs
+USER node
 
 EXPOSE 3000
 ENV PORT=3000
